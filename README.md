@@ -31,33 +31,44 @@ clone the repository:
 git clone https://github.com/ankurt02/flutter_anime_recom.git
 ```
 
-
+<br>
+<br>
 open the project folder
-
+<br>
+<br>
 add the required dependancies to pubspec.yaml
 ```
 flutter pub get
 ```
-
-
+<br>
+<br>
 download required python libraries
 ```
 pip install -r requirements.txt
 ```
-
-
+<br>
+<br>
+<br>
+<br>
 ### run the python-flask server
 navigate to anime_rec -> backend -> model
 ```
 cd backend\model
 ```
-
+<br>
+<br>
+<br>
+<br>
 
 
 run the following command to start the server
 ```
 python app.py
 ```
+<br>
+<br>
+<br>
+<br>
 
 
 

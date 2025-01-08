@@ -48,10 +48,10 @@ pip install -r requirements.txt
 <br>
 ### run the python-flask server
 navigate to anime_rec -> backend -> model
+
 ```
 cd backend\model
 ```
-
 
 
 run the following command to start the server

@@ -36,16 +36,20 @@ git clone https://github.com/ankurt02/flutter_anime_recom.git
 open the project folder
 <br>
 <br>
+
 add the required dependancies to pubspec.yaml
 ```
 flutter pub get
 ```
+
 <br>
 <br>
+
 download required python libraries
 ```
 pip install -r requirements.txt
 ```
+
 <br>
 <br>
 <br>

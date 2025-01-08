@@ -43,6 +43,7 @@ pip install -r requirements.txt
 ```
 
 ### run the python-flask server
+
 navigate to anime_rec -> backend -> model
 
 ```

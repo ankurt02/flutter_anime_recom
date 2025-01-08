@@ -74,13 +74,13 @@ flutter run
 
 ## Screenshots
 <div style="display: flex; justify-content: space-between; margin: 6px;">
-    <div style="text-align: center; width: 300px;">
+    <div style="text-align: center; width: 100;">
         <img src="screenshots\naruto_recom.png" alt="Anime recommendation for Naruto" style="width: 100%; height: 550px; margin: 6px;" />
         <figcaption style="background-color: #0f0f0f; color: white; font-style: italic; padding: 2px;">
             Fig. - Anime recommendation for Naruto.
         </figcaption>
     </div>
-    <div style="text-align: center; width: 300px;">
+    <div style="text-align: center; width: 100;">
         <img src="screenshots\one_piece_recom.png" alt="Anime recommendation for One-Piece" style="width: 100%; height: 550px; margin: 6px;" />
         <figcaption style="background-color: #0f0f0f; color: white; font-style: italic; padding: 2px;">
             Fig. - Anime recommendation for One-Piece.

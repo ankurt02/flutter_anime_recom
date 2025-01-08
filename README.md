@@ -1,4 +1,4 @@
-# Anime Recommendation using KNN, made with Flutter :blue_heart:
+# Flutter Anime Recommendation (KNN) 
 
 This project is a flutter application integrated with machine learning model to recommend anime based on the user input.
 The model used is K-Nearest Neighbors (KNN) algorithm, to recommend the most relevant anime.

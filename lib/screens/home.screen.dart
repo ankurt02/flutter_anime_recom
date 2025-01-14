@@ -49,7 +49,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
     } catch (e) {
       setState(() {
         recommendations = [];
-        errorMessage = "Failed to fetch recommendations. Please try again.";
+        errorMessage = "Couldn't find recommendations for this anime.";
       });
     }
   }

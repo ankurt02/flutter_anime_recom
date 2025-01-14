@@ -142,6 +142,7 @@ flutter run
 - [ ] Add more anime data
 - [ ] Add User Login and user-feedback to improver model
 - [ ] Add more anime data along with banner
+- [ ] Add better name-error handling
 
 
 

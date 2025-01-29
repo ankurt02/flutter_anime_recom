@@ -31,8 +31,21 @@ def recommend_anime_knn(title, top_n=10):
 
     distances, indices = knn.kneighbors(features_combined[anime_index].reshape(1, -1))
     
-    recommended_anime = df.iloc[indices[0][1:top_n+1]]['Name'].values
-    return recommended_anime
+    # Get the names, ratings, and episodes of the recommended anime
+    # Ensure the 'Rating Score' and 'Episodes' are treated as the correct types
+    recommended_anime = df.iloc[indices[0][1:top_n+1]][['Name', 'Rating Score', 'Episodes']]
+
+# Ensure 'Rating Score' is numeric (float) and 'Episodes' is integer
+    recommended_anime['Rating Score'] = pd.to_numeric(recommended_anime['Rating Score'], errors='coerce')
+    recommended_anime['Episodes'] = pd.to_numeric(recommended_anime['Episodes'], errors='coerce')
+
+# Convert DataFrame to list of dictionaries and ensure proper data types
+    anime_list = recommended_anime.to_dict(orient='records')
+
+# Send the proper response with Rating Score and Episodes in the correct format
+    return anime_list
+
+
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
@@ -43,7 +56,8 @@ def recommend():
         return jsonify({"error": "Anime title is required"}), 400
     
     recommendations = recommend_anime_knn(title)
-    return jsonify({"recommendations": recommendations.tolist()})  # Convert numpy array to list
+    print("length : ",len(recommendations))
+    return jsonify({"recommendations": recommendations})  # Convert numpy array to list
 
 @app.route("/metrics", methods=["POST"])
 def evaluate():

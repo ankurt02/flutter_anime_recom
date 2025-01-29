@@ -13,11 +13,18 @@ class AnimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
+    return Container(
+      margin: EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: Colors.white
+        ),
+        color: Colors.black54,
+      ),
       child: ListTile(
         title: Text(name),
-        subtitle: Text('Rating: $rating | Seasons: $seasons'),
+        subtitle: Text('Rating: ${rating.toStringAsFixed(1)} | Episodes: $seasons'),
       ),
     );
   }

@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../services/anime.model.dart';
+import '../widgets/anime.card.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -14,6 +17,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+
+
 class RecommendationScreen extends StatefulWidget {
   @override
   _RecommendationScreenState createState() => _RecommendationScreenState();
@@ -21,7 +26,7 @@ class RecommendationScreen extends StatefulWidget {
 
 class _RecommendationScreenState extends State<RecommendationScreen> {
   final TextEditingController _controller = TextEditingController();
-  List<String> recommendations = [];
+  List<Anime> recommendations = [];
   String errorMessage = "";
 
   Future<void> fetchRecommendations(String animeTitle) async {
@@ -36,7 +41,9 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
-          recommendations = List<String>.from(data['recommendations']);
+          recommendations = List<Anime>.from(
+            data['recommendations'].map((anime) => Anime.fromJson(anime))
+          );
           errorMessage = "";
         });
       } else {
@@ -88,15 +95,19 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
               ),
             if (recommendations.isNotEmpty)
               Expanded(
-                child: ListView.builder(
-                  itemCount: recommendations.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(recommendations[index]),
-                    );
-                  },
-                ),
-              ),
+  child: ListView.builder(
+    itemCount: recommendations.length,
+    itemBuilder: (context, index) {
+      final anime = recommendations[index];
+      return AnimeCard(
+        name: anime.name,
+        rating: anime.rating,
+        seasons: anime.episodes, // Use episodes here, as AnimeCard expects 'seasons'
+      );
+    },
+  ),
+),
+
           ],
         ),
       ),

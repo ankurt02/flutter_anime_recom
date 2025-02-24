@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -95,14 +97,14 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
               ),
             if (recommendations.isNotEmpty)
               Expanded(
-  child: ListView.builder(
-    itemCount: recommendations.length,
-    itemBuilder: (context, index) {
-      final anime = recommendations[index];
-      return AnimeCard(
-        name: anime.name,
-        rating: anime.rating,
-        seasons: anime.episodes, // Use episodes here, as AnimeCard expects 'seasons'
+                 child: ListView.builder(
+                    itemCount: recommendations.length,
+                    itemBuilder: (context, index) {
+                        final anime = recommendations[index];
+                    return AnimeCard(
+                        name: anime.name,
+                        rating: anime.rating,
+                        seasons: anime.episodes, // Use episodes here, as AnimeCard expects 'seasons'
       );
     },
   ),

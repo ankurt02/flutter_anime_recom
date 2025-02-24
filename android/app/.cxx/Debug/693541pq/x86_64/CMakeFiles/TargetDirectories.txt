@@ -1,0 +1,2 @@
+C:/Users/acer/Desktop/all/Flutter/anime_rec/android/app/.cxx/Debug/693541pq/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/acer/Desktop/all/Flutter/anime_rec/android/app/.cxx/Debug/693541pq/x86_64/CMakeFiles/rebuild_cache.dir

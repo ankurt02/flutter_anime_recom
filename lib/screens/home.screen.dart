@@ -53,7 +53,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
       errorMessage = "";
     });
 
-    final url = Uri.parse("http://127.0.0.1:5000/recommend");
+    final url = Uri.parse("https://ankurt02-anime-recommender-api.hf.space/recommend");
     try {
       final response = await http.post(
         url,

@@ -39,6 +39,7 @@ dependencies:
   device_preview: ^1.2.0
   shared_preferences: ^2.4.0
   gap: ^3.0.1
+  dio: ^5.4.0
 
 dev_dependencies:
   flutter_test:
@@ -64,8 +65,22 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/img_eef.jpg
+    - assets/images/twoimg.jpg
+    - assets/images/r1imag.jpg
+    - assets/images/download.jpg
+    - assets/images/fivei.jpg
+    - assets/images/Ichigo.jpg
+    - assets/images/sixi.jpg
+    - assets/images/threei.jpg
+    - assets/images/seveni.jpg
+    - assets/images/eighti.jpg
+    - assets/images/ninei.jpg
+    - assets/images/teni.jpg
+    - assets/images/eleveni.jpg
+    - assets/images/twelvei.jpg
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

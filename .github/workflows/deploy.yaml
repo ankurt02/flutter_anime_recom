@@ -1,0 +1,35 @@
+# Name of the workflow
+name: Deploy Flutter Web to GitHub Pages
+
+# Controls when the action will run.
+# This workflow runs on pushes to the "main" branch.
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checks out your repository's code
+      - uses: actions/checkout@v3
+
+      # 2. Sets up the Flutter SDK
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # 3. Builds the Flutter web application
+      - name: Build Web
+        run: flutter build web --release --base-href /flutter_anime_recom/
+        # 
+        # IMPORTANT: Change 'anime_rec' to your exact GitHub repository name!
+        #
+
+      # 4. Deploys the built files to the 'gh-pages' branch
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web

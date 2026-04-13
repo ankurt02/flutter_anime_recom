@@ -40,6 +40,10 @@ dependencies:
   shared_preferences: ^2.4.0
   gap: ^3.0.1
   dio: ^5.4.0
+  my_logger: 
+    git:
+      url: https://github.com/ankurt02/MyLogger.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
@@ -66,20 +70,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/img_eef.jpg
-    - assets/images/twoimg.jpg
-    - assets/images/r1imag.jpg
-    - assets/images/download.jpg
-    - assets/images/fivei.jpg
-    - assets/images/Ichigo.jpg
-    - assets/images/sixi.jpg
-    - assets/images/threei.jpg
-    - assets/images/seveni.jpg
-    - assets/images/eighti.jpg
-    - assets/images/ninei.jpg
-    - assets/images/teni.jpg
-    - assets/images/eleveni.jpg
-    - assets/images/twelvei.jpg
+    - assets/images/
 
   #   - images/a_dot_ham.jpeg
 

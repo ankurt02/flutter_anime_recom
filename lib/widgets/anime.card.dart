@@ -93,7 +93,7 @@ class AnimeCard extends StatelessWidget {
                 },
                 errorBuilder: (context, error, stackTrace) {
                   return Image.asset(
-                    'assets/fallback_image.png', // Ensure this file exists
+                    'assets/images/fallback_image.png', // Ensure this file exists
                     fit: BoxFit.cover,
                   );
                 },

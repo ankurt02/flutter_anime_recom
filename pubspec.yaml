@@ -44,6 +44,7 @@ dependencies:
     git:
       url: https://github.com/ankurt02/MyLogger.git
       ref: master
+  google_fonts: ^8.0.2
 
 dev_dependencies:
   flutter_test:

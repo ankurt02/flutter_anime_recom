@@ -1,10 +1,11 @@
 import 'package:anime_rec/core/logger.dart';
-
 import 'dart:convert';
 import 'package:anime_rec/services/anime.model.dart';
 import 'package:anime_rec/widgets/anime.card.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // Make sure this path is correct
+import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class RecommendationScreen extends StatefulWidget {
   const RecommendationScreen({super.key});
@@ -29,14 +30,16 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
     try {
       logger.i("INIT : Fetching top anime", tag: "INIT");
       setState(() => isLoading = true);
+
       List<Anime> topAnime = Anime.getTopAnime();
       List<Anime> enrichedAnime = await _enrichAnimeListWithImages(topAnime);
+
       setState(() {
         recommendations = enrichedAnime;
       });
     } catch (e, stackTrace) {
       logger.e("INIT ERROR",
-          error: 2, stackTrace: stackTrace, tag: "INIT Error");
+          error: e, stackTrace: stackTrace, tag: "INIT Error");
     } finally {
       setState(() {
         isLoading = false;
@@ -46,177 +49,309 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
 
   Future<List<Anime>> _enrichAnimeListWithImages(List<Anime> animeList) async {
     logger.i("Starting image fetching", tag: "IMAGE-FETCHING");
+
     List<Anime> enrichedList = [];
+
     for (final anime in animeList) {
       try {
         logger.d("Fetching image for : ${anime.name}");
+
         final imageUrl = await JikanService.fetchAnimeImageUrl(anime.name);
-        logger.d("Image fetched : ${anime.name} -> $imageUrl");
-        enrichedList.add(anime.copyWith(imageUrl: imageUrl));
+
+        if (imageUrl != null && imageUrl.isNotEmpty) {
+          enrichedList.add(anime.copyWith(imageUrl: imageUrl));
+        } else {
+          enrichedList.add(anime.copyWith(
+            imageUrl: "assets/images/fallback_image.png",
+          ));
+        }
       } catch (e) {
         logger.e("IMAGE FETCH FAILED : ${anime.name}", error: e);
-        // enrichedList.add(anime);
+
+        enrichedList.add(anime.copyWith(
+          imageUrl: "assets/images/fallback_image.png",
+        ));
       }
+
       await Future.delayed(const Duration(milliseconds: 500));
     }
+
     logger.i("ENRICH COMPLETE : ${enrichedList.length} items");
     return enrichedList;
   }
 
-  Future<void> fetchRecommendations(String animeTitle) async {
-    logger.i("API CALL STARTED");
-    logger.d("User input: $animeTitle");
-    setState(() {
-      isLoading = true;
-      errorMessage = "";
-    });
+ Future<void> fetchRecommendations(String animeTitle) async {
+  logger.i("API CALL STARTED");
 
-    final url =
-        Uri.parse("https://ankurt02-anime-recommender-api.hf.space/recommend");
-    try {
-      logger.d("Sending POST request to: $url");
-      final response = await http.post(
-        url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"title": animeTitle}),
+  setState(() {
+    isLoading = true;
+    errorMessage = "";
+  });
+
+  final url = Uri.parse(
+    "https://ankurt02-anime-recommender-api.hf.space/recommend",
+  );
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({"title": animeTitle}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      List<Anime> initialRecommendations = List<Anime>.from(
+        data['recommendations'].map((anime) {
+          return Anime.fromJson(anime);
+        }),
       );
 
-      logger.i("RESPONSE RECEIVED");
-      logger.d("Status Code: ${response.statusCode}");
-      logger.d("Response Body: ${response.body}");
+      final enrichedRecommendations =
+          await _enrichAnimeListWithImages(initialRecommendations);
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        List<Anime> initialRecommendations = List<Anime>.from(
-          data['recommendations'].map((anime) {
-            logger.d("Parsing anime : ${anime.toString()}");
-            return Anime.fromJson(anime);
-          }),
-        );
-
-        logger.i("Parsed ${initialRecommendations.length} recommendations");
-
-        final enrichedRecommendations =
-            await _enrichAnimeListWithImages(initialRecommendations);
-        setState(() {
-          recommendations = enrichedRecommendations;
-        });
-        logger.i("UI UPDATED with recommendations");
-      } else {
-        logger.w("Non-200 response received");
-
-        try {
-          final data = jsonDecode(response.body);
-          errorMessage = data['error'] ?? "Unknown server error";
-        } catch (_) {
-          errorMessage = "Server error: ${response.statusCode}";
-        }
-
-        setState(() {
-          recommendations = [];
-        });
-      }
-    } catch (e, stackTrace) {
-      logger.e("API call FAILED", error: e, stackTrace: stackTrace);
+      setState(() {
+        recommendations = enrichedRecommendations;
+      });
+    } else {
       setState(() {
         recommendations = [];
-        errorMessage = "Connection Failed.";
-      });
-    } finally {
-      logger.i("API call ended");
-      setState(() {
-        isLoading = false;
+        errorMessage = "Server error: ${response.statusCode}";
       });
     }
+  } catch (e) {
+    // 🔥 PRINT REAL ERROR
+    print("API ERROR: $e");
+
+    setState(() {
+      recommendations = [];
+      errorMessage = "Connection Failed.";
+    });
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFf4f4f0),
       appBar: AppBar(
-        title: const Text("Anime Recommendation"),
+        title: Text(
+          "Shikamaru-ai",
+          style: GoogleFonts.spaceGrotesk(
+            fontWeight: FontWeight.w500,
+            fontSize: 24,
+            color: Colors.black87,
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                labelText: "Enter Anime Name",
-                border: OutlineInputBorder(),
-              ),
+            SizedBox(
+              width: 500,
+              child: TextField(
+  controller: _controller,
+  cursorColor: Colors.black87, // 🔥 cursor color
+  style: TextStyle(
+    color: Colors.grey.shade900, // dark grey / near black
+    fontSize: 16,
+  ),
+
+  decoration: InputDecoration(
+    labelText: "Enter Anime Name",
+
+    // 🔥 LABEL COLORS
+    labelStyle: TextStyle(color: Colors.grey.shade700),
+    floatingLabelStyle: TextStyle(color: Colors.black87),
+
+    // 🔥 BORDER (NORMAL)
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.grey.shade500),
+    ),
+
+    // 🔥 BORDER (FOCUSED)
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(
+        color: Colors.black87,
+        width: 2,
+      ),
+    ),
+  ),
+),
             ),
-            const SizedBox(height: 16),
+            const Gap(18),
             ElevatedButton(
               onPressed: () {
                 if (_controller.text.isNotEmpty) {
                   fetchRecommendations(_controller.text);
                 }
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF69E07),
+                foregroundColor: Colors.white,
+              ),
               child: const Text("Get Recommendations"),
             ),
             const SizedBox(height: 16),
+
+            /// LOADING
             if (isLoading)
               const Expanded(
                 child: Center(
                   child: CircularProgressIndicator(color: Colors.amber),
                 ),
               )
+
+            /// CONTENT
             else ...[
               if (errorMessage.isNotEmpty)
-                Text(
-                  errorMessage,
-                  style: const TextStyle(color: Colors.red),
-                ),
+                Text(errorMessage, style: const TextStyle(color: Colors.red)),
               if (_controller.text.isEmpty && errorMessage.isEmpty)
                 const Text(
                   "Top Anime",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1a1a1a),
+                  ),
                 ),
               if (recommendations.isNotEmpty)
                 Expanded(
-                  // Use LayoutBuilder to get the screen constraints
                   child: LayoutBuilder(
                     builder: (context, constraints) {
-                      // Define a breakpoint for mobile width
-                      bool isMobile = constraints.maxWidth < 600;
+                      final topAnime = recommendations.take(10).toList();
 
-                      Widget listView = ListView.builder(
-                        itemCount: recommendations.length,
-                        itemBuilder: (context, index) {
-                          final anime = recommendations[index];
-                          return AnimeCard(
-                            name: anime.name,
-                            rating: anime.rating,
-                            seasons: anime.episodes,
-                            imageUrl: anime.imageUrl,
-                          );
-                        },
-                      );
-
-                      if (isMobile) {
-                        // On mobile, return the list view directly to fill the width
-                        return listView;
-                      } else {
-                        // On desktop/wide screens, center the list in a constrained box
-                        return Center(
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              // Set the max width to 65% of the available space
-                              maxWidth: constraints.maxWidth * 0.65,
+                      return Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 900),
+                          child: GridView.builder(
+                            itemCount: topAnime.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 24,
+                              mainAxisSpacing: 24,
+                              childAspectRatio: 3.2,
                             ),
-                            child: listView,
+                            itemBuilder: (context, index) {
+                              final anime = topAnime[index];
+
+                              return Stack(
+                                children: [
+                                  AnimeCard(
+                                    name: anime.name,
+                                    rating: anime.rating,
+                                    seasons: anime.episodes,
+                                    imageUrl: anime.imageUrl,
+                                  ),
+
+                                  // 🔺 TRIANGLE
+                                  Positioned(
+                                    top: 6,
+                                    left: 6,
+                                    child: SizedBox(
+                                      width: 60,
+                                      height: 60,
+                                      child: Stack(
+                                        children: [
+                                          CustomPaint(
+                                            size: const Size(60, 60),
+                                            painter: TrianglePainter(
+                                              (index == 0)
+                                                  ? const Color.fromARGB(255, 252, 177, 48) // 🥇
+                                                  : (index == 1)
+                                                      ? Colors
+                                                          .grey.shade400 // 🥈
+                                                      : (index == 2)
+                                                          ? const Color.fromARGB(255, 181, 100, 1) // 🥉
+                                                          : Colors.black
+                                                              .withOpacity(0.8),
+                                            ),
+                                          ),
+
+                                          // 🔥 NUMBER
+                                          Positioned(
+                                            top: 8,
+                                            left: 8,
+                                            child: Text(
+                                              "${index + 1}",
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
-                        );
-                      }
+                        ),
+                      );
                     },
                   ),
-                ),
+                )
             ],
           ],
         ),
       ),
     );
   }
+}
+
+class TrianglePainter extends CustomPainter {
+  final Color color;
+
+  TrianglePainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+
+    final path = Path();
+
+    double r = 12; // 🔥 smooth only top-left
+
+    path.moveTo(r, 0);
+
+    // 🔥 TOP EDGE (sharp on right)
+    path.lineTo(size.width, 0);
+
+    // 🔥 RIGHT EDGE (sharp)
+    path.lineTo(0, size.height);
+
+    // 🔥 LEFT EDGE up
+    path.lineTo(0, r);
+
+    // 🔥 ONLY smooth top-left corner
+    path.quadraticBezierTo(
+      0,
+      0,
+      r,
+      0,
+    );
+
+    path.close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
